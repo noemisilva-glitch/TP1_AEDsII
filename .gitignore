@@ -1,0 +1,11 @@
+bin/
+obj/
+*.o
+*.exe
+trabalho
+*.cbp
+*.depend
+*.layout
+ValgrindOut.xml
+.Rhistory
+*.dat
