@@ -119,18 +119,20 @@ void intercalacao_arvore_de_vencedores(TPilha **pilha, int *vetTop, char *nome_a
     /* 2) constroi os nos internos de baixo para cima (torneio inicial) */
     for (int i = tam - 1; i >= 1; i--)
         arv[i] = vencedor_entre(pilha, vetTop, num_p, arv[2 * i], arv[2 * i + 1]);
- 
+    
+    int pos_saida = 0; //posicao (em registros) do proximo registro no arquivo de saida
+
     /* 3) repete: remove o vencedor da raiz, grava na saida e refaz so o caminho ate a raiz */
     while (1) {
         int p = arv[1]; //particao dona do menor elemento atual
         if (chave_topo(pilha, vetTop, num_p, p) == INT_MAX)
             break; //raiz e HIGH VALUE: todas as particoes acabaram
  
-        TFunc *f = pop(pilha[p], 0, &vetTop[p]); //retira o menor da pilha da particao
-         fseek(out, pos_saida * tamanho_registro(), SEEK_SET);
+        TFunc *f = pop(pilha[p], 0, &vetTop[p]);
+        fseek(out, pos_saida * tamanho_registro(), SEEK_SET);
         salva_funcionario(f, out);
         pos_saida++;
-        free(f);
+    free(f);
  
         /* o novo topo da particao p (ou HIGH VALUE) disputa de novo,
          subindo da folha de p ate a raiz: O(log num_p) comparacoes por registro */
@@ -140,5 +142,18 @@ void intercalacao_arvore_de_vencedores(TPilha **pilha, int *vetTop, char *nome_a
  
     free(arv);
     fclose(out);
+}
+
+int chave_topo(TPilha **pilha, int *vetTop, int num_p, int p) {
+    if (p < 0 || p >= num_p) return INT_MAX;
+    TFunc *f = peek_func(pilha[p], 0, &vetTop[p]);
+    if (f == NULL) return INT_MAX;
+    return f->cod;
+}
+
+int vencedor_entre(TPilha **pilha, int *vetTop, int num_p, int a, int b) {
+    int ka = chave_topo(pilha, vetTop, num_p, a);
+    int kb = chave_topo(pilha, vetTop, num_p, b);
+    return (kb < ka) ? b : a;
 }
 
