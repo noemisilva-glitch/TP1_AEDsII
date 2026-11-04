@@ -86,6 +86,57 @@ void intercalacao_basico(char *nome_arquivo_saida, int num_p, Lista *nome_partic
 }
 
 void intercalacao_arvore_de_vencedores(TPilha **pilha, int *vetTop, char *nome_arquivo_saida, int num_p){
-    //implementar primeira parte do trabalho
+    if (num_p <= 0) {
+        printf("Numero de particoes invalido\n");
+        return;
+    }
+ 
+    FILE *out;
+    if ((out = fopen(nome_arquivo_saida, "wb")) == NULL) {
+        printf("Erro ao abrir arquivo de saida\n");
+        return;
+    }
+ 
+    /* A arvore e um vetor (heap): no 1 = raiz, filhos de i = 2i e 2i+1.
+     As folhas ficam nas posicoes [tam, 2*tam-1], com tam = menor potencia de 2 >= num_p.
+     Cada no guarda o INDICE DA PARTICAO que venceu a disputa naquela subarvore.
+     Folhas excedentes (>= num_p) sao nos de preenchimento e nunca vencem. */
+    int tam = 1;
+    while (tam < num_p)
+        tam *= 2;
+ 
+    int *arv = (int *) malloc(sizeof(int) * 2 * tam);
+    if (arv == NULL) {
+        printf("Erro de alocacao da arvore de vencedores\n");
+        fclose(out);
+        return;
+    }
+ 
+    /* 1) folhas: cada folha representa uma particao */
+    for (int i = 0; i < tam; i++)
+        arv[tam + i] = i;
+ 
+    /* 2) constroi os nos internos de baixo para cima (torneio inicial) */
+    for (int i = tam - 1; i >= 1; i--)
+        arv[i] = vencedor_entre(pilha, vetTop, num_p, arv[2 * i], arv[2 * i + 1]);
+ 
+    /* 3) repete: remove o vencedor da raiz, grava na saida e refaz so o caminho ate a raiz */
+    while (1) {
+        int p = arv[1]; //particao dona do menor elemento atual
+        if (chave_topo(pilha, vetTop, num_p, p) == INT_MAX)
+            break; //raiz e HIGH VALUE: todas as particoes acabaram
+ 
+        TFunc *f = pop(pilha[p], 0, &vetTop[p]); //retira o menor da pilha da particao
+        salva_funcionario(f, out);
+        free(f);
+ 
+        /* o novo topo da particao p (ou HIGH VALUE) disputa de novo,
+         subindo da folha de p ate a raiz: O(log num_p) comparacoes por registro */
+        for (int i = (tam + p) / 2; i >= 1; i /= 2)
+            arv[i] = vencedor_entre(pilha, vetTop, num_p, arv[2 * i], arv[2 * i + 1]);
+    }
+ 
+    free(arv);
+    fclose(out);
 }
 
