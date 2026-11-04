@@ -14,7 +14,7 @@ void classificacao_interna(FILE *arq, Lista *nome_arquivos_saida, int M, int nFu
 o arquivo de dados de entrada, a lista contendo os nomes dos arquivos de saída das partições,
 o númer de elementos M a ser armazenado em cada partição e o número de registro total do arquivo e o tamanho do reservatório.
 Fiquem a vontade para modificar a estrutura, foi uma sugestão.*/
-void selecao_natural(FILE *arq, Lista *nome_arquivos_saida, int M, int nFunc, int n);
+int selecao_natural(FILE *arq, Lista *nome_arquivos_saida, int M, int nFunc, int n, int *tam_particoes);
 
 
 #endif
