@@ -127,7 +127,9 @@ void intercalacao_arvore_de_vencedores(TPilha **pilha, int *vetTop, char *nome_a
             break; //raiz e HIGH VALUE: todas as particoes acabaram
  
         TFunc *f = pop(pilha[p], 0, &vetTop[p]); //retira o menor da pilha da particao
+         fseek(out, pos_saida * tamanho_registro(), SEEK_SET);
         salva_funcionario(f, out);
+        pos_saida++;
         free(f);
  
         /* o novo topo da particao p (ou HIGH VALUE) disputa de novo,
