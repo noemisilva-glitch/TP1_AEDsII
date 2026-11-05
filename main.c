@@ -133,7 +133,7 @@ int main(){
             case (6):
                 if(crioulistadenomes){
                     printf("\n\nGerando particoes, utilizando o metodo selecao natural.\n");
-                    nParticoes = selecao_natural(..., 1, tam_part);
+                    nParticoes = selecao_natural(arq, nomes, nElementos, nFunc, 1, tam_part); //devolve o numero de particoes geradas
 
                     //salvando o ponteiro para o início da lista de nomes
                     prox = nomes;
